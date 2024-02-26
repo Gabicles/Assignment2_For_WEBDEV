@@ -1,17 +1,33 @@
-const express = require('express')
-const bodyParser = require('body-parser')
+const express = require('express');
+const { credentials } = require('./config');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const expressSession = require('express-session');
 
 const indexRouter = require('./routes/index');
 const authorsRouter = require('./routes/authors');
 const booksRouter = require('./routes/books');
+const genresRouter = require('./routes/genres'); // Import the genres router
 
-const app = express()
-const port = 3000
+const app = express();
+const port = 3000;
 
-//extra platform setup
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cookieParser(credentials.cookieSecret));
+app.use(expressSession({
+  secret: credentials.cookieSecret,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
+}));
 
-// view engine setup
+// session configuration
+//make it possible to use flash messages, and pass them to the view
+app.use((req, res, next) => {
+  res.locals.flash = req.session.flash;
+  delete req.session.flash;
+  next();
+});
+
 var handlebars = require('express-handlebars').create({
   helpers: {
     eq: (v1, v2) => v1 == v2,
@@ -34,25 +50,29 @@ var handlebars = require('express-handlebars').create({
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
+app.use(bodyParser.urlencoded({ extended: true }));
 
+// Routes
 app.use('/', indexRouter);
 app.use('/authors', authorsRouter);
 app.use('/books', booksRouter);
+app.use('/genres', genresRouter); // Use the genres router
 
 // custom 404 page
 app.use((req, res) => {
-  res.status(404)
-  res.send('<h1>404 - Not Found</h1>')
-})
+  res.status(404);
+  res.send('<h1>404 - Not Found</h1>');
+});
 
 // custom 500 page
 app.use((err, req, res, next) => {
-  console.error(err.message)
-  res.type('text/plain')
-  res.status(500)
-  res.send('500 - Server Error')
-})
+  console.error(err.message);
+  res.type('text/plain');
+  res.status(500);
+  res.send('500 - Server Error');
+});
 
 app.listen(port, () => console.log(
-`Express started on http://localhost:${port}; ` +
-`press Ctrl-C to terminate.`))
+  `Express started on http://localhost:${port}; ` +
+  `press Ctrl-C to terminate.`
+));

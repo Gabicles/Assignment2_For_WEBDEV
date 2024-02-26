@@ -1,5 +1,5 @@
-<h1>New Book</h1>
-<form action="/books/upsert" role="form" method="post">
+<h1>New Genre</h1>
+<form action="/genres/upsert" role="form" method="post">
   {{#if book}}
     <div>
       <h2>Editing: {{book.firstName}} {{book.lastName}}</h2>
@@ -29,7 +29,7 @@
   <div>
     <label for="genre">Genre</label>
     <select id="genre" name="genre">
-      <option disabled value>-- select genre --</option>
+      <option disabled selected>-- Select Genre --</option>
       {{#each genres}}
         <option value="{{this}}">{{this}}</option>
       {{/each}}
