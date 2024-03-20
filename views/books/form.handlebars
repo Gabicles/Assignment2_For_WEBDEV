@@ -1,9 +1,11 @@
 <h1>New Book</h1>
+
 <form action="/books/upsert" role="form" method="post">
+  <input type="hidden" name="_csrf" value="{{_csrfToken}}">
   {{#if book}}
     <div>
-      <h2>Editing: {{book.firstName}} {{book.lastName}}</h2>
-      <input type="hidden" id="id" name="id" value="{{bookIndex}}">
+      <h2>{{book.title}}</h2>
+      <input type="hidden" name="id" value="{{bookIndex}}">
     </div>
   {{/if}}
   <div>
@@ -16,8 +18,8 @@
   </div>
   <div>
     <label for="author_ids">Author</label>
-    <select id="author_ids" multiple name="authorIds">
-      <option disabled value>-- select author --</option>
+    <select name="authorIds" multiple id="author_ids">
+      <option disabled value>-- select Author --</option>
       {{#each authors}}
         <option value="{{@index}}" {{#if (and @root.book (in @root.book.authorIds @index))}}selected{{/if}}>
           {{this.firstName}} {{this.lastName}}
@@ -25,15 +27,16 @@
       {{/each}}
     </select>
   </div>
-  <!-- Add the genre dropdown -->
   <div>
-    <label for="genre">Genre</label>
-    <select id="genre" name="genre">
-      <option disabled value>-- select genre --</option>
+    <label for="genre_id">Genre</label>
+    <select name="genreId" id="genre_id">
+      <option disabled value>-- select Genre --</option>
       {{#each genres}}
-        <option value="{{this}}">{{this}}</option>
+        <option value="{{@index}}" {{#if (and @root.book (eq @root.book.genreId @index))}}selected{{/if}}>
+          {{this.genre}}
+        </option>
       {{/each}}
     </select>
   </div>
-  <button type="submit">Submit</button>
+  <button type="submit" class="btn btn-primary">Submit</button>
 </form>

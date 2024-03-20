@@ -1,25 +1,30 @@
-// models/genre.js
-
-const genres = ["Science Fiction", "Fantasy", "Mystery", "Thriller", "Romance"]; // Add available genres here
-
-exports.all = genres;
-
-exports.add = (genre) => {
-  genres.push(genre);
+// Genre model!!
+const genres = {
+  1: { name: "Science Fiction" },
+  2: { name: "Fantasy" },
+  3: { name: "Romance" },
+  4: { name: "Mystery" },
+  5: { name: "Horror" }
 };
 
-exports.get = (idx) => {
-  return genres[idx];
-};
+exports.getAllGenres = () => {
+  return Object.values(genres);
+}
 
-exports.update = (genre) => {
+exports.getGenreById = (id) => {
+  return genres[id];
+}
+
+exports.updateGenre = (genre) => {
   genres[genre.id] = genre;
-};
+}
 
-exports.upsert = (genre) => {
+exports.upsertGenre = (genre) => {
   if (genre.id) {
-    exports.update(genre);
+    exports.updateGenre(genre);
   } else {
-    exports.add(genre);
+    const id = Object.keys(genres).length + 1;
+    genre.id = id.toString();
+    genres[id] = genre;
   }
-};
+}

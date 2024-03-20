@@ -1,28 +1,33 @@
-// routes/genres.js
-
+// Genres router
 const express = require('express');
 const router = express.Router();
-const Genre = require('../models/genre'); // Import Genre model
+const Genre = require('../models/genre');
+
+router.get('/', function(req, res, next) {
+  const genres = Genre.getAllGenres();
+  res.render('genres/index', { title: 'BookedIn || Genres', genres: genres });
+});
 
 router.get('/form', async (req, res, next) => {
-  try {
-    // Fetch genres from the Genre model
-    const genres = Genre.all;
+  res.render('genres/form', { title: 'BookedIn || Genres' });
+});
 
-    res.render('genres/form', { 
-      title: 'BookedIn || Genres', 
-      genres: genres // Pass genres to the template
-    });
-  } catch (err) {
-    // Handle errors
-    next(err);
-  }
+router.get('/edit', async (req, res, next) => {
+  const genreId = req.query.id;
+  const genre = Genre.getGenreById(genreId);
+  res.render('genres/form', { title: 'BookedIn || Genres', genre: genre, genreId: genreId });
 });
 
 router.post('/upsert', async (req, res, next) => {
-  // Handle post request if needed
+  console.log('body: ' + JSON.stringify(req.body));
+  Genre.upsertGenre(req.body);
+  let createdOrupdated = req.body.id ? 'updated' : 'created';
+  req.session.flash = {
+    type: 'info',
+    intro: 'Success!',
+    message: `The genre has been ${createdOrupdated}!`,
+  };
+  res.redirect(303, '/genres');
 });
-
-// Other routes...
 
 module.exports = router;
