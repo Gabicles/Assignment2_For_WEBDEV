@@ -1,8 +1,8 @@
 <h1>Genres</h1>
-<a href="/genres/form">Create a new Genre</a>
+<a href="/Genres/form">Create a new Genre</a>
 {{#each genres}}
 <li>
-  {{this.name}} <!-- Display genre name instead of array index -->
-  <a href="/genres/edit?id={{this.id}}">edit</a> <!-- Pass genre id instead of array index -->
+  {{@index}} - {{this.genre}}
+  <a href="/Genres/edit?id={{@index}}">edit</a>
 </li>
 {{/each}}

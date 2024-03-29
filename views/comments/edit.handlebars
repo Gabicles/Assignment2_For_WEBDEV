@@ -1,0 +1,11 @@
+<h1>Edit Comment</h1>
+<form action="/comments/upsert" method="post">
+  <input type="hidden" name="_csrf" value="{{_csrfToken}}">
+  <input type="hidden" name="id" value="{{comment.id}}">
+  <input type="hidden" name="bookId" value="{{comment.bookId}}">
+  <label for="text">Comment Text:</label>
+  <textarea name="text" id="text">{{comment.text}}</textarea>
+  <button type="submit">Save Comment</button>
+</form>
+
+

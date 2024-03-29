@@ -1,30 +1,34 @@
-// Genre model!!
-const genres = {
-  1: { name: "Science Fiction" },
-  2: { name: "Fantasy" },
-  3: { name: "Romance" },
-  4: { name: "Mystery" },
-  5: { name: "Horror" }
-};
+const genres = [
+  {genre: "Sience Fiction"},
+  {genre: "Fantasy"},
+  {genre: "Romance"},
+  {genre: "Mystery"},
+  {genre: "Horror"}
+];
 
-exports.getAllGenres = () => {
-  return Object.values(genres);
+
+exports.add = (genre) => {
+  genres.push(genre);
 }
 
-exports.getGenreById = (id) => {
-  return genres[id];
+
+exports.get = (idx) => {
+  return genres[idx];
 }
 
-exports.updateGenre = (genre) => {
+
+exports.update = (genre) => {
   genres[genre.id] = genre;
 }
 
-exports.upsertGenre = (genre) => {
+
+exports.upsert = (genre) => {
   if (genre.id) {
-    exports.updateGenre(genre);
+    exports.update(genre);
   } else {
-    const id = Object.keys(genres).length + 1;
-    genre.id = id.toString();
-    genres[id] = genre;
+    exports.add(genre);
   }
 }
+
+
+exports.all = genres

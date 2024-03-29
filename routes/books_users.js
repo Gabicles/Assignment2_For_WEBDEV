@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
+
 const BookUser = require('../models/book_user');
+
 
 router.post('/upsert', async (req, res, next) => {
   console.log('body: ' + JSON.stringify(req.body))
   let bookId = req.body.bookId;
-  redirect = `/books/show/${bookId}`;
+  let redirect = `/books/show/${bookId}`;
   BookUser.upsert(req.body);
   req.session.flash = {
     type: 'info',
@@ -15,5 +17,6 @@ router.post('/upsert', async (req, res, next) => {
   };
   res.redirect(303, redirect)
 });
+
 
 module.exports = router;

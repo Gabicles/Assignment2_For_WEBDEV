@@ -1,54 +1,59 @@
+// books.js
+
 const express = require('express');
-const Book = require('../models/book');
-const Author = require('../models/author');
-const Genre = require('../models/genre');
-const BookUser = require('../models/book_user');
 const router = express.Router();
+const Book = require('../models/book');
+const Comment = require('../models/comment');
+const BookUser = require('../models/book_user');
+const Author = require('../models/author'); // Assuming you have an Author model
+const Genre = require('../models/genre'); // Assuming you have a Genre model
 
-router.get('/', function(req, res, next) {
-  const books = Book.all
-  res.render('books/index', { title: 'BookedIn || books', books: books });
+// GET all books
+router.get('/', async (req, res, next) => {
+  try {
+    const books = await Book.all(); // Using the all() method to fetch all books
+    res.render('books/index', { title: 'BookedIn || Books', books: books });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 });
 
-router.get('/form', async (req, res, next) => {
-  res.render('books/form', { title: 'BookedIn || Books', authors: Author.all, genres: Genre.all });
-});
-
-router.get('/edit', async (req, res, next) => {
-  let bookIndex = req.query.id;
-  let book = Book.get(bookIndex);
-  res.render('books/form', { title: 'BookedIn || Books', book: book, bookIndex: bookIndex, authors: Author.all, genres: Genre.all });
-});
-
+// GET a specific book
 router.get('/show/:id', async (req, res, next) => {
   let templateVars = {
     title: 'BookedIn || Books',
-    book: Book.get(req.params.id),
     bookId: req.params.id,
-    statuses: BookUser.statuses
-  }
-  if (templateVars.book.authorIds) {
-    templateVars['authors'] = templateVars.book.authorIds.map((authorId) => Author.get(authorId));
-  }
-  if (templateVars.book.genreId) {
-    templateVars['genre'] = Genre.get(templateVars.book.genreId);
-  }
-  if (req.session.currentUser) {
-    templateVars['bookUser'] = BookUser.get(req.params.id, req.session.currentUser.email);
-  }
-  res.render('books/show', templateVars);
-});
-
-router.post('/upsert', async (req, res, next) => {
-  console.log('body: ' + JSON.stringify(req.body))
-  Book.upsert(req.body);
-  let createdOrupdated = req.body.id ? 'updated' : 'created';
-  req.session.flash = {
-    type: 'info',
-    intro: 'Success!',
-    message: `the book has been ${createdOrupdated}!`,
+    statuses: BookUser.statuses,
+    currentUser: req.session.currentUser // Pass current user to the template
   };
-  res.redirect(303, '/books')
+
+  try {
+    // Fetch book details
+    const book = await Book.get(req.params.id);
+    templateVars.book = book;
+
+    if (!book) {
+      // Handle book not found error (e.g., redirect or display error message)
+      return next(); // Pass control to error handler middleware (if applicable)
+    }
+
+    // Fetch additional data (comments, authors, genre) based on book
+    templateVars.comments = await Comment.getCommentsForBook(req.params.id); // Fix function name
+    if (book.authorIds) {
+      templateVars['authors'] = await Promise.all(book.authorIds.map(Author.get)); // Fetch authors efficiently using Promise.all
+    }
+    if (book.genreId) {
+      templateVars['genre'] = await Genre.get(book.genreId);
+    }
+
+    res.render('books/show', templateVars);
+  } catch (error) {
+    // Handle unexpected errors during data fetching
+    console.error(error);
+    next(error); // Pass error to error handler middleware
+  }
 });
 
 module.exports = router;
+

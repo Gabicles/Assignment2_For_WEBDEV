@@ -1,37 +1,41 @@
-const db = require('../database')
+// author.js
 
+// Import necessary modules
+const db = require('../database');
+
+// Retrieve all authors
 exports.all = async () => {
- const { rows } = await db.getPool().query("select * from authors order by id");
- return db.camelize(rows);
-}
-/*
-const authors = [
-  {firstName: "James", lastName: "S. A. Corey"},
-  {firstName: "Craig", lastName: "Alanson"},
-  {firstName: "Cixin", lastName: "Liu"},
-];
-*/
+  const sql = 'SELECT * FROM authors ORDER BY id';
+  return await db.query(sql);
+};
 
-exports.add = (author) => {
-  authors.push(author);
-}
+// Add a new author
+exports.add = async (author) => {
+  const sql = 'INSERT INTO authors (first_name, last_name) VALUES ($1, $2)';
+  const params = [author.firstName, author.lastName];
+  await db.query(sql, params);
+};
 
-exports.get = (idx) => {
-  return authors[idx];
-}
+// Retrieve an author by ID
+exports.get = async (id) => {
+  const sql = 'SELECT * FROM authors WHERE id = $1';
+  const params = [id];
+  const result = await db.query(sql, params);
+  return result[0]; // Assuming there's only one author with the given ID
+};
 
-exports.update = (author) => {
-  authors[author.id] = author;
-}
+// Update an existing author
+exports.update = async (author) => {
+  const sql = 'UPDATE authors SET first_name = $1, last_name = $2 WHERE id = $3';
+  const params = [author.firstName, author.lastName, author.id];
+  await db.query(sql, params);
+};
 
-exports.upsert = (author) => {
+// Upsert an author
+exports.upsert = async (author) => {
   if (author.id) {
-    exports.update(author);
+    await exports.update(author);
   } else {
-    exports.add(author);
+    await exports.add(author);
   }
-}
-
-/*
-exports.all = authors
-*/
+};
