@@ -1,12 +1,12 @@
-// books.js
+
 
 const express = require('express');
 const router = express.Router();
 const Book = require('../models/book');
 const Comment = require('../models/comment');
 const BookUser = require('../models/book_user');
-const Author = require('../models/author'); // Assuming you have an Author model
-const Genre = require('../models/genre'); // Assuming you have a Genre model
+const Author = require('../models/author'); 
+const Genre = require('../models/genre'); 
 
 // GET all books
 router.get('/', async (req, res, next) => {
@@ -34,14 +34,14 @@ router.get('/show/:id', async (req, res, next) => {
     templateVars.book = book;
 
     if (!book) {
-      // Handle book not found error (e.g., redirect or display error message)
-      return next(); // Pass control to error handler middleware (if applicable)
+      // Handle book not found error 
+      return next(); // 
     }
 
     // Fetch additional data (comments, authors, genre) based on book
-    templateVars.comments = await Comment.getCommentsForBook(req.params.id); // Fix function name
+    templateVars.comments = await Comment.getCommentsForBook(req.params.id); 
     if (book.authorIds) {
-      templateVars['authors'] = await Promise.all(book.authorIds.map(Author.get)); // Fetch authors efficiently using Promise.all
+      templateVars['authors'] = await Promise.all(book.authorIds.map(Author.get)); 
     }
     if (book.genreId) {
       templateVars['genre'] = await Genre.get(book.genreId);
@@ -49,9 +49,9 @@ router.get('/show/:id', async (req, res, next) => {
 
     res.render('books/show', templateVars);
   } catch (error) {
-    // Handle unexpected errors during data fetching
+  
     console.error(error);
-    next(error); // Pass error to error handler middleware
+    next(error); 
   }
 });
 

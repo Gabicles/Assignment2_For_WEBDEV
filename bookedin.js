@@ -26,12 +26,11 @@ app.use(expressSession({
   secret: credentials.cookieSecret,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } 
 }));
 
 
 // session configuration
-//make it possible to use flash messages, and pass them to the view
 app.use((req, res, next) => {
   res.locals.flash = req.session.flash
   delete req.session.flash

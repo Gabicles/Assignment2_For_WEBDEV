@@ -1,4 +1,4 @@
-// author.js
+
 
 // Import necessary modules
 const db = require('../database');

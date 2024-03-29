@@ -1,27 +1,27 @@
-<h1><%= book.title %></h1>
-<% if (authors && authors.length > 0) { %>
-  <p><strong>Author(s):</strong>
-  <% authors.forEach(author => { %>
-    <%= author.firstName %> <%= author.lastName %><br>
-  <% }); %>
+<h1>${book.title}</h1>
+
+${authors && authors.length > 0 ? `
+  <p><strong>Author(s):</strong><br>
+    ${authors.map(author => `${author.firstName} ${author.lastName}`).join('<br>')}
   </p>
-<% } %>
-<p><strong>Genre:</strong> <%= genre.genre %></p>
-<p><strong>Publishing Year:</strong> <%= book.publishingYear %></p>
+` : ''}
+
+<p><strong>Genre:</strong> ${genre.genre}</p>
+<p><strong>Publishing Year:</strong> ${book.publishingYear}</p>
 
 <!-- Display comments -->
 <h2>Comments</h2>
 <ul>
-  <% comments.forEach(comment => { %>
-    <li><strong><%= comment.userEmail %>:</strong> <%= comment.text %></li>
-  <% }); %>
+  ${comments.map(comment => `<li><strong>${comment.userEmail}:</strong> ${comment.text}</li>`).join('')}
 </ul>
 
 <!-- Add comment form -->
-<% if (currentUser) { %>
+${currentUser ? `
   <form action="/books/add-comment" method="POST">
-    <input type="hidden" name="bookId" value="<%= book.id %>">
+    <input type="hidden" name="bookId" value="${book.id}">
     <textarea name="commentText" rows="4" cols="50" placeholder="Type your comment here"></textarea><br>
     <button type="submit">Submit</button>
   </form>
-<% } %>
+` : ''}
+
+
